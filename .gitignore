@@ -1,0 +1,13 @@
+# Environment / secrets
+.env
+*.key
+
+# Flowise local runtime artifacts
+.flowise/
+node_modules/
+
+# OS
+.DS_Store
+
+# Vector store local data (if Chroma persists locally)
+chroma_db/
