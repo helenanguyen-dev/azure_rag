@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azure Docs RAG Assistant</title>
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg-elevated: #10162a;
+      --line: #1e2740;
+      --text: #e6ebf5;
+      --text-dim: #8993ad;
+      --azure: #4fc3f7;
+      --azure-dim: #2a5a75;
+      --amber: #f5b942;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 72px 24px 100px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      margin: 0 0 12px;
+      color: #fff;
+    }
+
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 1.02rem;
+      margin-bottom: 40px;
+      max-width: 56ch;
+    }
+
+    .pipeline-label {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .pipeline-step {
+      background: var(--bg-elevated);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 9px 14px;
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .pipeline-step:hover {
+      border-color: var(--azure-dim);
+      color: var(--text);
+    }
+    .pipeline-step.active {
+      border-color: var(--azure);
+      color: var(--azure);
+      background: rgba(79, 195, 247, 0.08);
+    }
+
+    .pipeline-detail {
+      min-height: 44px;
+      padding: 14px 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      margin-bottom: 44px;
+    }
+    .pipeline-detail strong { color: var(--text); }
+
+    .scope-box {
+      background: var(--bg-elevated);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--azure);
+      border-radius: 4px;
+      padding: 20px 22px;
+      margin-bottom: 32px;
+    }
+
+    .scope-box .label {
+      font-size: 0.82rem;
+      color: var(--amber);
+      margin-bottom: 10px;
+    }
+
+    .scope-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .scope-tag {
+      font-size: 0.85rem;
+      background: rgba(79, 195, 247, 0.1);
+      color: var(--azure);
+      border: 1px solid var(--azure-dim);
+      border-radius: 100px;
+      padding: 4px 12px;
+    }
+
+    p.body-text {
+      color: var(--text);
+      font-size: 0.98rem;
+    }
+
+    a {
+      color: var(--azure);
+      text-decoration: none;
+      border-bottom: 1px solid var(--azure-dim);
+    }
+    a:hover { border-bottom-color: var(--azure); }
+
+    .footer-note {
+      margin-top: 56px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 600px) {
+      .wrap { padding: 48px 20px 80px; }
+      h1 { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Azure Docs RAG Assistant</h1>
+    <p class="subtitle">Ask a question about Azure architecture in the chat button below. Answers are grounded in real Microsoft documentation, not general model knowledge.</p>
+
+    <div class="pipeline-label">How a question actually gets answered (click a step):</div>
+    <div class="pipeline" id="pipeline">
+      <div class="pipeline-step" data-detail="127 markdown files were pulled directly from Microsoft's own open-source Azure documentation repo on GitHub, scoped to six services.">GitHub Docs</div>
+      <div class="pipeline-step" data-detail="Each document is split along its markdown headers rather than at a fixed character count, so a chunk stays a complete section instead of cutting a paragraph in half.">Markdown Splitter</div>
+      <div class="pipeline-step" data-detail="Every chunk is converted into a 1536-number vector using OpenAI's text-embedding-3-small, capturing what it means rather than just the words it uses.">OpenAI Embeddings</div>
+      <div class="pipeline-step" data-detail="Those vectors live in a Postgres table with the pgvector extension. Row-level security keeps it read-only from the outside.">Supabase (pgvector)</div>
+      <div class="pipeline-step" data-detail="Your question is embedded the same way, matched against the closest stored chunks, and only that retrieved text is handed to the model, along with an instruction to say so if nothing relevant was found.">Retrieval Chain</div>
+    </div>
+    <div class="pipeline-detail" id="pipeline-detail">Click any step above to see what it actually does.</div>
+
+    <div class="scope-box">
+      <div class="label">What it actually knows (127 documents)</div>
+      <div class="scope-tags">
+        <span class="scope-tag">App Service</span>
+        <span class="scope-tag">Blob Storage</span>
+        <span class="scope-tag">Front Door</span>
+        <span class="scope-tag">Virtual Network</span>
+        <span class="scope-tag">RBAC</span>
+        <span class="scope-tag">Security</span>
+      </div>
+    </div>
+
+    <p class="body-text">
+      Try asking something outside that list, like AKS or Cosmos DB. It's instructed to admit the gap rather than
+      guess from general training knowledge, since that's exactly the kind of thing this project stress-tested.
+      Full writeup, including where it hallucinated before this fix, lives in the
+      <a href="https://github.com/huongquynhnguyen01-dev/azure_rag" target="_blank">project README</a>.
+    </p>
+
+    <div class="footer-note">Built with Flowise, OpenAI embeddings, and a Supabase vector store.</div>
+  </div>
+
+  <script>
+    const steps = document.querySelectorAll('.pipeline-step');
+    const detail = document.getElementById('pipeline-detail');
+    steps.forEach(step => {
+      step.addEventListener('click', () => {
+        steps.forEach(s => s.classList.remove('active'));
+        step.classList.add('active');
+        detail.innerHTML = '<strong>' + step.textContent + ':</strong> ' + step.dataset.detail;
+      });
+    });
+  </script>
+
+  <script type="module">
+    import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js";
+    Chatbot.init({
+      chatflowid: "82b44131-b1c6-4bb7-9f09-bf687dac71eb",
+      apiHost: "https://cloud.flowiseai.com",
+      theme: {
+        button: {
+          backgroundColor: "#4fc3f7",
+          iconColor: "#0a0e1a",
+        },
+        chatWindow: {
+          welcomeMessage: "Hi! Ask me about Azure App Service, Storage, Front Door, Networking, RBAC, or Security.",
+          backgroundColor: "#0a0e1a",
+          botMessage: {
+            backgroundColor: "#10162a",
+            textColor: "#e6ebf5",
+          },
+          userMessage: {
+            backgroundColor: "#4fc3f7",
+            textColor: "#0a0e1a",
+          },
+        },
+      },
+    });
+  </script>
+</body>
+</html>
