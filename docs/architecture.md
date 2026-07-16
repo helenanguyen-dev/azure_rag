@@ -30,7 +30,7 @@ Conversational Retrieval Chain
      knowledge base" if retrieval doesn't support an answer
         │
         ▼
-Chat model (e.g., GPT-4o-mini or Claude Haiku via API)
+Chat model (e.g., GPT-4o-mini via API)
         │
         ▼
 Embeddable chat widget (Flowise built-in)
