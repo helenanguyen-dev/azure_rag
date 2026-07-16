@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure Docs Assistant — Built on MCP</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --blue:#0F6CBD; --blue-dark:#0B4F8F; --blue-tint:#EFF6FC;
+    --green:#107C41; --green-tint:#EAF6EF;
+    --ink:#1B1A19; --sub:#605E5C; --line:#E1DFDD;
+    --bg:#FAFAFA; --panel:#FFFFFF;
+    --radius:8px;
+    --shadow:0 1px 2px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:'Inter',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+       -webkit-font-smoothing:antialiased;}
+  a{color:var(--blue);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);
+      padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:56px;}
+  .navleft{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px;}
+  .navleft .dot{width:22px;height:22px;border-radius:5px;background:var(--blue);display:inline-block;}
+  .navlinks{display:flex;gap:28px;font-size:13px;color:var(--sub);}
+  .navlinks a{color:var(--sub);}
+
+  /* HERO */
+  .hero{max-width:920px;margin:0 auto;padding:72px 32px 48px;text-align:center;}
+  .kicker{display:inline-flex;align-items:center;gap:6px;background:var(--blue-tint);color:var(--blue-dark);
+          font-size:12px;font-weight:600;padding:6px 14px;border-radius:100px;margin-bottom:20px;}
+  h1{font-size:38px;font-weight:700;line-height:1.2;margin:0 0 16px;letter-spacing:-0.01em;}
+  .hero p{font-size:16px;color:var(--sub);line-height:1.65;max-width:620px;margin:0 auto;}
+
+  /* SECTION SHELL */
+  section{max-width:1040px;margin:0 auto;padding:56px 32px;}
+  .section-label{font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;
+                 letter-spacing:.06em;margin-bottom:8px;}
+  h2{font-size:24px;font-weight:700;margin:0 0 12px;}
+  .section-sub{color:var(--sub);font-size:14.5px;line-height:1.6;max-width:640px;margin-bottom:36px;}
+
+  /* HOW IT WORKS - flow */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+  .flow::before{content:"";position:absolute;top:38px;left:8%;right:8%;height:2px;
+                background:repeating-linear-gradient(to right,var(--line) 0 6px,transparent 6px 12px);
+                z-index:0;}
+  .step{position:relative;z-index:1;background:var(--bg);padding:0 12px;text-align:center;}
+  .stepnum{width:76px;height:76px;margin:0 auto 16px;border-radius:50%;background:var(--panel);
+           border:2px solid var(--blue);display:flex;align-items:center;justify-content:center;
+           font-weight:700;color:var(--blue);font-size:20px;}
+  .step h3{font-size:14px;font-weight:600;margin:0 0 6px;}
+  .step p{font-size:12.5px;color:var(--sub);line-height:1.5;margin:0;}
+
+  /* TOOL CARDS */
+  .tools{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .toolcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+            padding:20px;box-shadow:var(--shadow);}
+  .toolcard .name{font-family:monospace;font-size:13px;font-weight:600;color:var(--blue-dark);
+                  background:var(--blue-tint);display:inline-block;padding:3px 8px;border-radius:5px;margin-bottom:10px;}
+  .toolcard p{font-size:13px;color:var(--sub);line-height:1.55;margin:0;}
+
+  /* COMPARISON */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .comparecard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;}
+  .comparecard .tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;
+                    padding:4px 10px;border-radius:100px;display:inline-block;margin-bottom:12px;}
+  .comparecard.before .tag{background:#FDF3E7;color:#8A5A00;}
+  .comparecard.after .tag{background:var(--green-tint);color:var(--green);}
+  .comparecard h4{font-size:15px;font-weight:600;margin:0 0 10px;}
+  .comparecard ul{margin:0;padding-left:18px;font-size:13px;color:var(--sub);line-height:1.8;}
+
+  /* DEMO */
+  .demo-wrap{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+             box-shadow:var(--shadow);overflow:hidden;}
+  .demo-head{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .demo-head .title{font-weight:600;font-size:14px;}
+  .livepill{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--green);font-weight:600;}
+  .livepill .lit{width:7px;height:7px;border-radius:50%;background:var(--green);}
+  flowise-fullchatbot{display:block;width:100%;height:560px;}
+
+  footer{text-align:center;padding:40px 32px 60px;font-size:12.5px;color:var(--sub);}
+
+  @media (max-width:800px){
+    .flow{grid-template-columns:1fr 1fr;gap:32px 0;}
+    .flow::before{display:none;}
+    .tools{grid-template-columns:1fr;}
+    .compare{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="navleft"><span class="dot"></span> Azure Docs Assistant</div>
+  <div class="navlinks">
+    <a href="#how">How it works</a>
+    <a href="#compare">Why MCP</a>
+    <a href="#demo">Try it</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="kicker">● Built on the Model Context Protocol</div>
+  <h1>An Azure docs assistant that always shows its work</h1>
+  <p>This assistant doesn't store or search its own copy of Microsoft's documentation. Instead, every
+     answer is retrieved live through the Microsoft Learn MCP server — the same protocol Anthropic
+     introduced to let AI models call external tools directly, safely, and transparently.</p>
+</div>
+
+<section id="how">
+  <div class="section-label">How it works</div>
+  <h2>From question to grounded answer</h2>
+  <div class="section-sub">MCP (Model Context Protocol) is an open standard for connecting an AI model to external
+    tools and data sources — instead of the model guessing from memory, it can call a real tool and use
+    what comes back.</div>
+  <div class="flow">
+    <div class="step">
+      <div class="stepnum">1</div>
+      <h3>You ask a question</h3>
+      <p>e.g. "What's the default idle timeout for App Service?"</p>
+    </div>
+    <div class="step">
+      <div class="stepnum">2</div>
+      <h3>Agent calls a tool</h3>
+      <p>The model decides to invoke <code>microsoft_docs_search</code> rather than answer from memory</p>
+    </div>
+    <div class="step">
+      <div class="stepnum">3</div>
+      <h3>MCP server queries Learn</h3>
+      <p>Microsoft's own MCP server searches live documentation and returns real excerpts + URLs</p>
+    </div>
+    <div class="step">
+      <div class="stepnum">4</div>
+      <h3>Grounded answer returned</h3>
+      <p>The model answers using only what the tool returned, citing the source</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-label">Available tools</div>
+  <h2>What this assistant can call</h2>
+  <div class="section-sub">The Microsoft Learn MCP server (learn.microsoft.com/api/mcp) exposes three tools over
+    Streamable HTTP, no authentication required.</div>
+  <div class="tools">
+    <div class="toolcard">
+      <div class="name">microsoft_docs_search</div>
+      <p>Searches official Microsoft documentation and returns relevant excerpts with source URLs.</p>
+    </div>
+    <div class="toolcard">
+      <div class="name">microsoft_docs_fetch</div>
+      <p>Retrieves the full content of a specific documentation page when a snippet isn't enough.</p>
+    </div>
+    <div class="toolcard">
+      <div class="name">microsoft_code_sample_search</div>
+      <p>Finds official code samples relevant to a given Azure service or API.</p>
+    </div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="section-label">Design decision</div>
+  <h2>Why move from a custom RAG pipeline to MCP</h2>
+  <div class="section-sub">The earlier version of this project used a self-built retrieval pipeline — a curated
+    document corpus, custom chunking, and a vector store. It worked, but came with real tradeoffs.</div>
+  <div class="compare">
+    <div class="comparecard before">
+      <div class="tag">Before — custom RAG</div>
+      <h4>Self-hosted vector store</h4>
+      <ul>
+        <li>Required manually curating and chunking ~127 documents</li>
+        <li>Chunking strategy directly affected answer quality</li>
+        <li>Citations required custom metadata engineering</li>
+        <li>Knowledge base goes stale unless re-ingested</li>
+      </ul>
+    </div>
+    <div class="comparecard after">
+      <div class="tag">Now — MCP</div>
+      <h4>Tool-orchestrated retrieval</h4>
+      <ul>
+        <li>No document ingestion or chunking to maintain</li>
+        <li>Always queries Microsoft's current, live documentation</li>
+        <li>Source URLs returned directly by the tool</li>
+        <li>Simpler to reason about — a build-vs-buy tradeoff, not a strictly "better" system</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="section-label">Live demo</div>
+  <h2>Ask it something</h2>
+  <div class="section-sub">Try a question about any Microsoft service or product — Azure, Microsoft 365, Power
+    Platform, and more — and watch it cite where the answer came from.</div>
+
+  <div class="demo-wrap">
+    <div class="demo-head">
+      <span class="title">Azure Docs Assistant</span>
+      <span class="livepill"><span class="lit"></span> Connected via MCP</span>
+    </div>
+    <flowise-fullchatbot id="chatbot-embed-target"></flowise-fullchatbot>
+  </div>
+</section>
+
+<footer>Built with Flowise + the Microsoft Learn MCP server. Not affiliated with or endorsed by Microsoft.</footer>
+
+<!--
+  FLOWISE EMBED — INLINE mode (renders inside the card above, not a popup bubble).
+  Fill in your v4 (Agent + Custom MCP) chatflow's ID and your Flowise host below.
+  Docs: https://github.com/FlowiseAI/FlowiseChatEmbed
+-->
+<script type="module">
+  import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+  Chatbot.initFull({
+    chatflowid: "9d62b6ef-945d-4f3b-a73d-664eaeb93f02",
+    apiHost: "https://cloud.flowiseai.com",
+    theme: {
+      chatWindow: { welcomeMessage: "Ask me anything about Microsoft services." }
+    }
+  })
+</script>
+
+</body>
+</html>
