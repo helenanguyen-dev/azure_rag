@@ -18,9 +18,9 @@ This version is deliberately scoped differently: instead of a generic "chat with
 | Interface | None (pipeline only) | Embeddable chat widget via Flowise |
 | Tooling | Langflow (deprecated in this project) | Flowise |
 
-## Planned v3
+## v3: live demo in Python
 
-A from-scratch Python/LangChain implementation of the same pipeline, to demonstrate the underlying mechanics that Flowise abstracts away (custom chunking logic, retrieval evaluation harness, prompt engineering without a visual builder).
+[`live-demo/`](live-demo/) is a from-scratch Python service that powers the live demo on the portfolio. It replaces Flowise with plain code: a hand-written MCP client for the Microsoft Learn MCP server, an OpenAI tool loop, and rate limits and spend caps so the public can use it safely. See its README for the design and setup.
 
 ## Data
 
